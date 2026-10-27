@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>শুভ জন্মদিন 💖</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;600&family=Caveat:wght@600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg1:#ffe3ee; --bg2:#ffc2d9; --rose:#e8467c; --deep:#8a1f4b; --ink:#4a1630; --paper:#fffaf6;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{min-height:100%}
+body{
+  font-family:'Hind Siliguri',sans-serif;color:var(--ink);
+  background:radial-gradient(1200px 700px at 20% -10%,#fff2f7 0,transparent 60%),linear-gradient(160deg,var(--bg1),var(--bg2));
+  background-attachment:fixed;overflow-x:hidden;
+  padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);
+}
+.hand{font-family:'Caveat','Hind Siliguri',cursive}
+
+/* floating hearts */
+#hearts{position:fixed;inset:0;pointer-events:none;overflow:hidden;z-index:0}
+.heart{position:absolute;bottom:-40px;opacity:.0;animation:rise linear forwards}
+@keyframes rise{0%{transform:translateY(0) rotate(0);opacity:0}10%{opacity:.7}100%{transform:translateY(-110vh) rotate(25deg);opacity:0}}
+
+/* gate */
+#gate{position:fixed;inset:0;z-index:20;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:18px;text-align:center;padding:24px;
+  background:linear-gradient(160deg,var(--bg1),var(--bg2));transition:opacity .8s,visibility .8s}
+#gate.gone{opacity:0;visibility:hidden}
+.envelope{font-size:84px;line-height:1;animation:bob 2.4s ease-in-out infinite}
+@keyframes bob{50%{transform:translateY(-8px) rotate(-3deg)}}
+#gate h1{font-size:44px;color:var(--deep)}
+#gate p{max-width:320px;color:var(--ink);opacity:.8}
+#count{font-size:34px;font-weight:600;color:var(--rose);font-variant-numeric:tabular-nums;min-height:46px}
+button.btn{font:inherit;font-weight:600;font-size:18px;border:0;border-radius:999px;padding:14px 34px;color:#fff;background:var(--rose);
+  box-shadow:0 8px 0 var(--deep);cursor:pointer;transition:transform .12s,box-shadow .12s}
+button.btn:active{transform:translateY(6px);box-shadow:0 2px 0 var(--deep)}
+button.btn:disabled{opacity:.45;cursor:not-allowed}
+button.btn:focus-visible,#mute:focus-visible,.stack:focus-visible{outline:3px solid var(--deep);outline-offset:4px}
+
+/* card */
+main{position:relative;z-index:1;max-width:560px;margin:0 auto;padding:36px 20px 80px;visibility:hidden}
+main.show{visibility:visible}
+.hero{text-align:center;padding:10px 0 26px}
+.hero .small{font-size:26px;color:var(--rose)}
+.hero h2{font-size:clamp(52px,16vw,84px);line-height:.95;color:var(--deep);margin:6px 0 10px}
+.hero .sub{min-height:1.6em;font-size:19px}
+.cursor{display:inline-block;width:2px;height:1em;background:var(--rose);margin-left:2px;vertical-align:-2px;animation:blink 1s steps(1) infinite}
+@keyframes blink{50%{opacity:0}}
+
+/* polaroid stack */
+.stack{position:relative;width:min(82vw,340px);aspect-ratio:3/4.15;margin:26px auto 14px;cursor:pointer;touch-action:pan-y;-webkit-tap-highlight-color:transparent}
+.pol{position:absolute;inset:0;background:var(--paper);padding:12px 12px 52px;border-radius:4px;
+  box-shadow:0 14px 30px rgba(138,31,75,.25);transition:transform .55s cubic-bezier(.2,.8,.2,1),opacity .4s}
+.pol img{width:100%;height:100%;object-fit:cover;object-position:50% 25%;display:block;background:#f3d6e2;border-radius:2px}
+.pol .cap{position:absolute;left:0;right:0;bottom:10px;text-align:center;font-size:28px;color:var(--deep)}
+.pol.out{transform:translate(120%,-8%) rotate(18deg)!important;opacity:0}
+.hint{text-align:center;font-size:15px;opacity:.7;margin-bottom:10px}
+.dots{display:flex;justify-content:center;gap:7px;margin-bottom:34px}
+.dots i{width:8px;height:8px;border-radius:50%;background:var(--rose);opacity:.25;transition:opacity .3s,transform .3s}
+.dots i.on{opacity:1;transform:scale(1.35)}
+
+/* letter */
+.letter{background:var(--paper);border-radius:6px;padding:30px 26px 34px;box-shadow:0 14px 30px rgba(138,31,75,.2);
+  background-image:repeating-linear-gradient(transparent 0 33px,#f6d3e1 33px 34px);background-position:0 18px}
+.letter h3{font-size:36px;color:var(--rose);margin-bottom:8px}
+.letter p{line-height:34px;font-size:18px;margin-bottom:34px}
+.letter p:last-of-type{margin-bottom:0}
+.sign{margin-top:26px;text-align:right;font-size:30px;color:var(--deep)}
+.end{text-align:center;margin-top:34px}
+.end .big{font-size:58px;color:var(--deep);line-height:1}
+
+#mute{position:fixed;right:14px;top:calc(14px + env(safe-area-inset-top,0px));z-index:10;width:46px;height:46px;border-radius:50%;border:0;background:var(--paper);
+  font-size:20px;box-shadow:0 4px 12px rgba(138,31,75,.3);cursor:pointer;visibility:hidden}
+#mute.show{visibility:visible}
+#confetti{position:fixed;inset:0;z-index:15;pointer-events:none}
+
+@media (prefers-reduced-motion:reduce){.envelope,.heart,.cursor{animation:none}.pol{transition:none}}
+</style>
+</head>
+<body>
+
+<div id="hearts" aria-hidden="true"></div>
+<canvas id="confetti" aria-hidden="true"></canvas>
+<button id="mute" aria-label="গান বন্ধ/চালু" title="গান">🔊</button>
+
+<section id="gate">
+  <div class="envelope" aria-hidden="true">💌</div>
+  <h1 class="hand" id="gateTitle">একটা সারপ্রাইজ আছে</h1>
+  <p id="gateText">শুধু তোমার জন্য।</p>
+  <div id="count" aria-live="polite"></div>
+  <button class="btn" id="openBtn" disabled>খুলে দেখো</button>
+</section>
+
+<main id="card">
+  <div class="hero">
+    <div class="small hand" id="topLine"></div>
+    <h2 class="hand" id="bigTitle"></h2>
+    <div class="sub"><span id="typed"></span><span class="cursor"></span></div>
+  </div>
+
+  <div class="stack" id="stack" tabindex="0" role="button" aria-label="পরের ছবি"></div>
+  <div class="hint">ছবিতে ট্যাপ করো</div>
+  <div class="dots" id="dots"></div>
+
+  <div class="letter">
+    <h3 class="hand" id="letterTitle"></h3>
+    <div id="letterBody"></div>
+    <div class="sign hand" id="sign"></div>
+  </div>
+
+  <div class="end">
+    <div class="big hand" id="endLine"></div>
+    <p style="margin-top:6px;opacity:.75" id="endSub"></p>
+  </div>
+</main>
+
+<audio id="song" src="song.mp3" loop preload="auto"></audio>
+
+<script>
+/* =====================================================
+   ✏️  এখানে তোমার লেখাগুলো বদলাও — শুধু এই অংশটা এডিট করলেই হবে
+   ===================================================== */
+const CONFIG = {
+  friendName: "বন্ধু",          // তোমার বেস্টফ্রেন্ডের নাম (যেমন "নিলিমা")
+  yourName:   "তোমার বেস্ট ফ্রেন্ড", // নিচে সাইন করার নাম
+
+  // রাত ১২টায় খুলবে। টাইম বদলাতে চাইলে এখানে। (বাংলাদেশ সময় +06:00)
+  // সরাসরি খোলা রাখতে চাইলে null লেখো:  unlockAt: null
+  unlockAt: "2026-10-28T00:00:00+06:00",
+
+  gateTitle: "একটা সারপ্রাইজ আছে",
+  gateText:  "ঘড়িতে ১২টা বাজলেই খুলে যাবে।",
+  openText:  "খুলে দেখো",
+
+  topLine:   "আজ শুধু তোমার দিন",
+  bigTitle:  "শুভ জন্মদিন",
+  typedLine: "আমার সবচেয়ে প্রিয় মানুষটাকে ❤",
+
+  // ছবির নিচের ক্যাপশন (৭টা ছবি, ছোটবেলা থেকে এখন পর্যন্ত)
+  captions: ["ছোট্ট তুমি", "সেই দুষ্টু মেয়ে", "আমাদের দিনগুলো", "সাজুগুজু তুমি", "আকাশ আর তুমি", "শাড়িতে তুমি", "আজকের তুমি"],
+
+  letterTitle: "প্রিয় বন্ধু,",
+  letter: [
+    "জন্মদিনের অনেক অনেক শুভেচ্ছা! এখানে তোমার জন্য নিজের কথাগুলো লিখে দাও।",
+    "আমাদের মজার স্মৃতি, তোমার কাছে আমি কেন কৃতজ্ঞ, আর তোমার জন্য কী দোয়া করি — সব এখানে লিখো।",
+    "সবসময় এমনই হাসিখুশি থেকো।"
+  ],
+  sign: "— তোমার বন্ধু",
+
+  endLine: "Happy Birthday 🎂",
+  endSub:  "আবার বলছি, অনেক ভালোবাসা তোমার জন্য 💖"
+};
+
+const PHOTOS = ["photo1.png","photo2.png","photo3.png","photo4.png","photo5.png","photo6.png","photo7.png"];
+/* ===================================================== */
+
+const $ = id => document.getElementById(id);
+const bn = n => String(n).replace(/\d/g, d => "০১২৩৪৫৬৭৮৯"[d]);
+
+// fill texts
+$("gateTitle").textContent = CONFIG.gateTitle;
+$("gateText").textContent = CONFIG.gateText;
+$("openBtn").textContent = CONFIG.openText;
+$("topLine").textContent = CONFIG.topLine;
+$("bigTitle").textContent = CONFIG.bigTitle + (CONFIG.friendName ? ", " + CONFIG.friendName : "");
+$("letterTitle").textContent = CONFIG.letterTitle;
+$("letterBody").innerHTML = CONFIG.letter.map(t => "<p></p>").join("");
+[...$("letterBody").children].forEach((p, i) => p.textContent = CONFIG.letter[i]);
+$("sign").textContent = CONFIG.sign + (CONFIG.yourName ? " " : "");
+$("endLine").textContent = CONFIG.endLine;
+$("endSub").textContent = CONFIG.endSub;
+
+// hearts
+const HEARTS = ["💖","💗","💕","🌸","💝"];
+function spawnHeart(){
+  const h = document.createElement("span");
+  h.className = "heart";
+  h.textContent = HEARTS[Math.floor(Math.random()*HEARTS.length)];
+  h.style.left = Math.random()*100 + "vw";
+  h.style.fontSize = (14 + Math.random()*20) + "px";
+  h.style.animationDuration = (7 + Math.random()*7) + "s";
+  $("hearts").appendChild(h);
+  setTimeout(() => h.remove(), 15000);
+}
+setInterval(spawnHeart, 700);
+
+// gate / countdown
+const params = new URLSearchParams(location.search);
+const testMode = params.has("test");
+const unlockMs = CONFIG.unlockAt ? new Date(CONFIG.unlockAt).getTime() : 0;
+function tick(){
+  const left = unlockMs - Date.now();
+  if (testMode || !unlockMs || left <= 0){
+    $("count").textContent = "";
+    $("openBtn").disabled = false;
+    return true;
+  }
+  const s = Math.floor(left/1000);
+  const h = Math.floor(s/3600), m = Math.floor(s%3600/60), sec = s%60;
+  $("count").textContent = bn([h,m,sec].map(x => String(x).padStart(2,"0")).join(":"));
+  return false;
+}
+const timer = setInterval(() => { if (tick()) clearInterval(timer); }, 1000);
+tick();
+
+// photos
+const stack = $("stack"), dots = $("dots");
+let order = PHOTOS.map((_, i) => i);   // front = order[0]
+PHOTOS.forEach(() => dots.appendChild(document.createElement("i")));
+const tilt = i => ((i*37)%11 - 5) * 0.9;
+const pols = PHOTOS.map((src, i) => {
+  const d = document.createElement("div");
+  d.className = "pol";
+  d.innerHTML = '<img alt="" loading="eager"><div class="cap hand"></div>';
+  d.querySelector("img").src = src;
+  d.querySelector(".cap").textContent = CONFIG.captions[i] || "";
+  stack.appendChild(d);
+  return d;
+});
+function layout(){
+  order.forEach((idx, pos) => {
+    const el = pols[idx];
+    el.classList.remove("out");
+    el.style.zIndex = PHOTOS.length - pos;
+    const vis = pos < 4;
+    el.style.opacity = vis ? 1 : 0;
+    el.style.transform = `translateY(${pos*-5}px) rotate(${pos===0 ? tilt(idx)*0.4 : tilt(idx)}deg) scale(${1 - pos*0.02})`;
+  });
+  [...dots.children].forEach((d, i) => d.classList.toggle("on", i === order[0]));
+}
+function next(){
+  const front = pols[order[0]];
+  front.classList.add("out");
+  order.push(order.shift());
+  setTimeout(layout, 420);
+}
+layout();
+stack.addEventListener("click", next);
+stack.addEventListener("keydown", e => { if (e.key === "Enter" || e.key === " " || e.key === "ArrowRight"){ e.preventDefault(); next(); }});
+let sx = null;
+stack.addEventListener("touchstart", e => sx = e.touches[0].clientX, {passive:true});
+stack.addEventListener("touchend", e => { if (sx !== null && Math.abs(e.changedTouches[0].clientX - sx) > 40){ e.preventDefault(); next(); } sx = null; });
+
+// typing
+function typeLine(){
+  const el = $("typed"); let i = 0; const t = CONFIG.typedLine;
+  (function step(){ el.textContent = t.slice(0, ++i); if (i < t.length) setTimeout(step, 90); })();
+}
+
+// confetti
+const cv = $("confetti"), cx = cv.getContext("2d");
+let bits = [];
+function sizeCv(){ cv.width = innerWidth; cv.height = innerHeight; }
+addEventListener("resize", sizeCv); sizeCv();
+function burst(){
+  const colors = ["#e8467c","#ff9ec0","#ffd1e1","#fff","#b3265e","#ffc94d"];
+  for (let i = 0; i < 160; i++){
+    bits.push({x: innerWidth/2, y: innerHeight*0.55, vx: (Math.random()-.5)*16, vy: -Math.random()*16-4,
+      s: 5+Math.random()*7, r: Math.random()*6, vr: (Math.random()-.5)*.4, c: colors[i%colors.length], life: 140+Math.random()*60});
+  }
+  if (bits.length === 160) loop();
+}
+function loop(){
+  cx.clearRect(0,0,cv.width,cv.height);
+  bits = bits.filter(b => b.life-- > 0);
+  bits.forEach(b => {
+    b.vy += .35; b.x += b.vx; b.y += b.vy; b.r += b.vr; b.vx *= .99;
+    cx.save(); cx.translate(b.x,b.y); cx.rotate(b.r); cx.fillStyle = b.c; cx.globalAlpha = Math.min(1, b.life/40);
+    cx.fillRect(-b.s/2,-b.s/4,b.s,b.s/2); cx.restore();
+  });
+  if (bits.length) requestAnimationFrame(loop); else cx.clearRect(0,0,cv.width,cv.height);
+}
+
+// open
+const song = $("song"), mute = $("mute");
+$("openBtn").addEventListener("click", () => {
+  song.volume = 0.9;
+  song.play().catch(() => {});
+  $("gate").classList.add("gone");
+  $("card").classList.add("show");
+  mute.classList.add("show");
+  burst(); setTimeout(burst, 900);
+  setTimeout(typeLine, 600);
+  for (let i = 0; i < 12; i++) setTimeout(spawnHeart, i*120);
+  window.scrollTo(0,0);
+});
+mute.addEventListener("click", () => {
+  if (song.paused){ song.play(); mute.textContent = "🔊"; } else { song.pause(); mute.textContent = "🔇"; }
+});
+</script>
+</body>
+</html>
