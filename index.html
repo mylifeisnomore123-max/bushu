@@ -117,7 +117,33 @@ main.show{visibility:visible}
 #mute.show{visibility:visible}
 #confetti{position:fixed;inset:0;z-index:15;pointer-events:none}
 
-@media (prefers-reduced-motion:reduce){.env,.fl,.tw,.cur,.flame{animation:none}.pol,.rv{transition:none}}
+
+.letter p{white-space:pre-line}
+#story{position:fixed;inset:0;z-index:18;display:grid;place-items:center;text-align:center;padding:30px;background:radial-gradient(500px 400px at 50% 40%,#fff 0,transparent 70%),linear-gradient(170deg,#fff5f8,#ffd0e2);opacity:0;visibility:hidden;transition:opacity .9s,visibility .9s}
+#story.on{opacity:1;visibility:visible}
+.sl{position:absolute;max-width:520px;padding:0 28px;font-size:clamp(26px,7vw,38px);font-weight:500;line-height:1.55;color:var(--berry);opacity:0;transform:translateY(14px);transition:opacity 1s,transform 1s}
+.sl.show{opacity:1;transform:none}
+.skip{position:absolute;bottom:calc(28px + env(safe-area-inset-bottom,0px));left:50%;transform:translateX(-50%);font:inherit;font-size:14px;background:none;border:0;color:var(--berry);opacity:.6;cursor:pointer;padding:8px 14px}
+.sec{margin-top:70px;text-align:center}
+.sec h3{font-size:clamp(34px,10vw,46px);color:var(--rose);line-height:1.15;margin-bottom:20px}
+.cards{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.fc{perspective:800px;aspect-ratio:1/1.05;border:0;background:none;cursor:pointer;font:inherit;-webkit-tap-highlight-color:transparent}
+.fc .in2{position:relative;width:100%;height:100%;transition:transform .7s;transform-style:preserve-3d}
+.fc.flip .in2{transform:rotateY(180deg)}
+.fc .f,.fc .b{position:absolute;inset:0;backface-visibility:hidden;-webkit-backface-visibility:hidden;border-radius:16px;display:grid;place-items:center;padding:12px;box-shadow:0 12px 22px rgba(163,34,90,.22)}
+.fc .f{background:linear-gradient(150deg,#ff8fb5,var(--rose));color:#fff;font-size:22px;font-weight:600}
+.fc .b{background:var(--paper);color:var(--plum);font-size:15.5px;line-height:1.55;transform:rotateY(180deg)}
+.balloons{position:relative;height:290px;max-width:360px;margin:0 auto}
+.bl{position:absolute;width:64px;height:78px;border:0;border-radius:50% 50% 48% 48%;cursor:pointer;animation:flt 3.6s ease-in-out infinite;
+  box-shadow:inset -9px -9px 16px rgba(0,0,0,.1),inset 8px 8px 14px rgba(255,255,255,.4);transition:transform .25s,opacity .25s}
+.bl::after{content:"";position:absolute;left:50%;top:100%;width:1.5px;height:90px;background:rgba(163,34,90,.35)}
+@keyframes flt{50%{transform:translateY(-16px) rotate(3deg)}}
+.bl.pop{animation:none;transform:scale(1.7);opacity:0;pointer-events:none}
+#pmsg{min-height:2.6em;margin-top:6px;font-size:30px;color:var(--berry);line-height:1.25}
+#pcnt{font-size:14px;opacity:.65;margin-top:2px}
+.replay{margin-top:26px}
+
+@media (prefers-reduced-motion:reduce){.bl{animation:none}.env,.fl,.tw,.cur,.flame{animation:none}.pol,.rv{transition:none}}
 </style>
 </head>
 <body>
@@ -139,6 +165,8 @@ main.show{visibility:visible}
   <button class="btn" id="openBtn"></button>
 </section>
 
+<section id="story" aria-live="polite"></section>
+
 <main id="card">
   <div class="hero">
     <div class="top script" id="topLine"></div>
@@ -154,7 +182,13 @@ main.show{visibility:visible}
   <div class="letter rv">
     <h3 class="hand" id="letterTitle"></h3>
     <div id="letterBody"></div>
-    <div class="sign hand" id="sign"></div>
+  </div>
+
+  <div class="sec rv">
+    <h3 class="hand" id="balloonsTitle"></h3>
+    <div class="balloons" id="balloons"></div>
+    <div id="pmsg" class="hand"></div>
+    <div id="pcnt"></div>
   </div>
 
   <div class="cakebox rv">
@@ -181,6 +215,7 @@ main.show{visibility:visible}
   <div class="end rv">
     <div class="big script grad" id="endLine"></div>
     <p id="endSub"></p>
+    <button class="btn replay" id="replayBtn"></button>
   </div>
 </main>
 
@@ -191,33 +226,45 @@ main.show{visibility:visible}
    ✏️  শুধু এই অংশটা এডিট করো — বাকি কিছু ছুঁতে হবে না
    ===================================================== */
 const CONFIG = {
-  friendName: "বুশু",                 // বেস্টফ্রেন্ডের নাম লেখো (যেমন "নিলিমা")
-  yourName:   "",                       // চাইলে নিজের নাম, সাইনের পাশে বসবে
+  friendName: "Bushu",
+  yourName:   "",
 
   gateTitle:  "Many Happy Returns!",
   openText:   "খুলে দেখ্‌ 💌",
+
+  // গেট খোলার পর একটা একটা করে এই লাইনগুলো আসবে (প্রতিটা ~৩ সেকেন্ড)
+  intro: [
+    "A special day for a very annoying person. 😏"
+  ],
 
   topLine:    "Happy Birthday",
   bigTitle:   "শুভ জন্মদিন",
   typedLine:  "তোকে ❤",
 
-  // ছবির ক্যাপশন (৭টা, ছোটবেলা থেকে এখন পর্যন্ত)
-  captions: ["ছোট্ট", "গিটারিস্ট", "ব্রুস্টের দিনগুলো", "আড়চোখা", "নীলিমা", "শাড়ি জাস্ট", "আজকের বাচ্চু"],
+  captions: ["ছোট্ট", "গিটারিস্ট", "পিচ্চু", "আড়চোখা", "নীলিমা", "বসন্ত", "আরও বসন্ত"],
 
-  letterTitle: "অপ্রিয় Bushu,",
+  letterTitle: "Not-So-Dear Bushu,",
   letter: [
     "জন্মদিনের অনেক অনেক শুভেচ্ছা!",
-    "আমাদের মজার স্মৃতি, তোমার কাছে আমি কেন কৃতজ্ঞ, আর তোমার জন্য কী দোয়া করি — সব এখানে লিখো।",
-    "সবসময় এমনই হাসিখুশি থেকো।"
+    "যদি আবার ফিরে আসে, প্রাচীন কোন শুভ্রতায়,\nরজনীগন্ধার মাতাল হাওয়ায়,\nবুকে চেপে অবাধ্য প্রেম...\nতাহলে...............।?"
   ],
-  sign: "তোমার বন্ধু",
 
-  cakeQ:    "মোমবাতিতে ফুঁ দে, আর একটা উইশ করো",
-  blowText: "ফুঁ দাও 🌬",
-  wishText: "আসল কেইক পাইমু কই,এটাই বেটার ✨",
+  balloonsTitle: "বেলুন ফোটা 🎈",
+  balloonMsgs: [
+    "তুই তো ভুলেই যাস আমারে 😊",
+    "চিঠি দেস না ক্যান? 🌟",
+    "হঠাৎ দেখা হবে 🤝",
+    "ট্রিট দিবি কিন্তু মনে কইরা 🍫",
+    "ভালো থাকিস 💖"
+  ],
+
+  cakeQ:    "মোমবাতিতে ফুঁ দে (আসল নাই)",
+  blowText: "ফুঁ দে 🌬",
+  wishText: "আসল কেইক পাইমু কই, এটাই বেটার ✨",
 
   endLine: "Many Happy Returns",
-  endSub:  "জাস্ট এতটুকুই 💖"
+  endSub:  "জাস্ট এতটুকুই 💖",
+  replayText: "আবার দেখ 🔁"
 };
 /* ===================================================== */
 
@@ -231,11 +278,37 @@ $("bigTitle").textContent = CONFIG.bigTitle;
 $("nameLine").textContent = CONFIG.friendName;
 $("letterTitle").textContent = CONFIG.letterTitle;
 CONFIG.letter.forEach(t => { const p = document.createElement("p"); p.textContent = t; $("letterBody").appendChild(p); });
-$("sign").textContent = "— " + CONFIG.sign + (CONFIG.yourName ? ", " + CONFIG.yourName : "");
 $("cakeQ").textContent = CONFIG.cakeQ;
 $("blowBtn").textContent = CONFIG.blowText;
 $("endLine").textContent = CONFIG.endLine;
 $("endSub").textContent = CONFIG.endSub;
+$("replayBtn").textContent = CONFIG.replayText;
+$("replayBtn").addEventListener("click", () => location.reload());
+$("balloonsTitle").textContent = CONFIG.balloonsTitle;
+const bn = n => String(n).replace(/\d/g, d => "০১২৩৪৫৬৭৮৯"[d]);
+
+/* balloons */
+const BCOL = ["#ff7fab","#ffa94d","#c77dff","#5fd3c4","#ff5d8f","#ffd36b"];
+let popped = 0; const total = CONFIG.balloonMsgs.length;
+$("pcnt").textContent = "ট্যাপ করে বেলুন ফুটা — " + bn(0) + "/" + bn(total);
+CONFIG.balloonMsgs.forEach((m, i) => {
+  const b = document.createElement("button");
+  b.className = "bl";
+  b.setAttribute("aria-label", "বেলুন");
+  b.style.left = (4 + i*(80/Math.max(total-1,1))) + "%";
+  b.style.bottom = (100 + (i%2)*60 + (i%3)*14) + "px";
+  b.style.background = BCOL[i % BCOL.length];
+  b.style.animationDelay = (i*0.5) + "s";
+  b.addEventListener("click", () => {
+    if (b.classList.contains("pop")) return;
+    b.classList.add("pop"); popped++;
+    $("pmsg").textContent = m;
+    $("pcnt").textContent = popped === total ? "সবগুলো ফুটিয়ে ফেললি 🎉" : "ট্যাপ করে বেলুন ফুটা — " + bn(popped) + "/" + bn(total);
+    const r = b.getBoundingClientRect();
+    burst(r.left + r.width/2, r.top + r.height/2, popped === total ? 200 : 50);
+  });
+  $("balloons").appendChild(b);
+});
 
 /* floating hearts + twinkles */
 const ICONS = ["💖","💗","💕","🌸","💝","🎀"];
@@ -299,7 +372,7 @@ stack.addEventListener("touchend", e => { if (sx !== null && Math.abs(e.changedT
 /* typing */
 function typeLine(){
   const el = $("typed"); let i = 0; const t = CONFIG.typedLine;
-  (function step(){ el.textContent = t.slice(0, ++i); if (i < t.length) setTimeout(step, 90); })();
+  (function step(){ el.textContent = t.slice(0, ++i); if (i < t.length) setTimeout(step, 130); })();
 }
 
 /* confetti */
@@ -325,20 +398,42 @@ function loop(){
   if (bits.length) requestAnimationFrame(loop); else { running = false; cx.clearRect(0,0,cv.width,cv.height); }
 }
 
-/* open */
+/* story + open */
 const song = $("song"), mute = $("mute");
+let started = false;
+function showCard(){
+  $("card").classList.add("show");
+  burst(); setTimeout(burst, 800);
+  setTimeout(typeLine, 500);
+  for (let i = 0; i < 10; i++) setTimeout(spawn, i*120);
+  scrollTo(0,0);
+}
+function playStory(done){
+  const st = $("story"), n = CONFIG.intro.length, timers = [];
+  st.innerHTML = "";
+  const els = CONFIG.intro.map(t => { const d = document.createElement("div"); d.className = "sl"; d.textContent = t; st.appendChild(d); return d; });
+  const skip = document.createElement("button"); skip.className = "skip"; skip.textContent = "এড়িয়ে যাও ›"; st.appendChild(skip);
+  let finished = false;
+  function finish(){
+    if (finished) return; finished = true;
+    timers.forEach(clearTimeout);
+    st.classList.remove("on");
+    setTimeout(done, 500);
+  }
+  skip.addEventListener("click", finish);
+  st.classList.add("on");
+  els.forEach((el, i) => {
+    timers.push(setTimeout(() => { if (i) els[i-1].classList.remove("show"); el.classList.add("show"); }, 1500 + i*3200));
+  });
+  timers.push(setTimeout(finish, 1500 + n*3200 + 600));
+}
 $("openBtn").addEventListener("click", () => {
+  if (started) return; started = true;
   song.volume = 0.9;
   song.play().catch(() => {});
   $("gate").classList.add("gone");
-  setTimeout(() => {
-    $("card").classList.add("show");
-    mute.classList.add("show");
-    burst(); setTimeout(burst, 800);
-    setTimeout(typeLine, 500);
-    for (let i = 0; i < 10; i++) setTimeout(spawn, i*120);
-    scrollTo(0,0);
-  }, 700);
+  mute.classList.add("show");
+  setTimeout(() => playStory(showCard), 500);
 });
 mute.addEventListener("click", () => {
   if (song.paused){ song.play(); mute.textContent = "🔊"; } else { song.pause(); mute.textContent = "🔇"; }
