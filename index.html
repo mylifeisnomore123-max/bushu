@@ -85,7 +85,7 @@ body.manual .zone{display:none}
 .pic{width:min(78vw,340px);aspect-ratio:3/4;border-radius:24px;overflow:hidden;border:6px solid #fff;box-shadow:0 0 0 6px rgba(255,255,255,.35),0 26px 50px rgba(163,34,90,.45);transform:rotate(-2deg)}
 .fr:nth-child(even) .pic{transform:rotate(2deg)}
 .pic img{width:100%;height:100%;object-fit:cover;object-position:50% 25%;display:block}
-.on .pic img{animation:kb 7s ease-out forwards}
+.on .pic img{animation:kb 4s ease-out forwards}
 @keyframes kb{from{transform:scale(1)}to{transform:scale(1.13) translate(-2%,-1%)}}
 .ph .cap{margin-top:26px;font-size:46px;font-weight:600;color:var(--berry);line-height:1.1;text-shadow:0 2px 14px rgba(255,255,255,.9)}
 .ph .no{margin-top:6px;font-size:15px;color:var(--berry);opacity:.8;letter-spacing:2px}
@@ -169,7 +169,7 @@ const CONFIG = {
   typedLine:  "তোকে ❤",
 
   captions: ["ছোট্ট", "গিটারিস্ট", "পিচ্চু", "আড়চোখা", "নীলিমা", "বসন্ত", "আরও বসন্ত"],
-  photoSeconds: 5.5,                  // প্রতিটা ছবি কত সেকেন্ড থাকবে
+  frameSeconds: 3.5,                  // শুরুর ফ্রেম + প্রতিটা ছবি, সবার সময় সমান (৮ × ৩.৫ = ২৮ সেকেন্ড)
 
   letterTitle: "Not-So-Dear Bushu,",
   letter: [
@@ -179,11 +179,11 @@ const CONFIG = {
 
   balloonsTitle: "বেলুন ফোটা 🎈",
   balloonMsgs: [
-    "তুই তো ভুলেই যাস আমারে 😊",
-    "চিঠি দেস না ক্যান? 🌟",
-    "হঠাৎ দেখা হবে 🤝",
-    "ট্রিট দিবি কিন্তু মনে কইরা 🍫",
-    "ভালো থাকিস 💖"
+    "সবসময় হাসিখুশি থাকিস 😊",
+    "যা চাস তার চেয়েও বেশি পা 🌟",
+    "আমাদের বন্ধুত্ব চিরকাল থাকুক 🤝",
+    "আজকে ট্রিট দিবি কিন্তু 🍫",
+    "অনেক অনেক ভালো থাকিস 💖"
   ],
 
   cakeQ:    "মোমবাতিতে ফুঁ দে (আসল নাই)",
@@ -246,7 +246,7 @@ function addFrame(cls, html, dur, enter){
 }
 
 // 1. hero
-addFrame("hero", '<div class="orb"></div><div class="top script"></div><h2 class="grad"></h2><div class="nm hand"></div><div class="sub"><span id="typed"></span><span class="cur"></span></div>', 7000, () => {
+addFrame("hero", '<div class="orb"></div><div class="top script"></div><h2 class="grad"></h2><div class="nm hand"></div><div class="sub"><span id="typed"></span><span class="cur"></span></div>', CONFIG.frameSeconds*1000, () => {
   burst(); setTimeout(burst, 700); typeLine();
 });
 const hf = frames[0].el;
@@ -261,7 +261,7 @@ function typeLine(){
 
 // 2. photos (story style)
 PHOTOS.forEach((src, i) => {
-  const f = addFrame("ph", '<div class="bg"></div><div class="pic"><img alt=""></div><div class="cap hand"></div><div class="no"></div>', CONFIG.photoSeconds*1000);
+  const f = addFrame("ph", '<div class="bg"></div><div class="pic"><img alt=""></div><div class="cap hand"></div><div class="no"></div>', CONFIG.frameSeconds*1000);
   f.querySelector(".bg").style.backgroundImage = 'url("' + src + '")';
   f.querySelector("img").src = src;
   f.querySelector(".cap").textContent = CONFIG.captions[i] || "";
@@ -372,8 +372,8 @@ function playStory(done){
   function finish(){ if (finished) return; finished = true; timers.forEach(clearTimeout); st.classList.remove("on"); setTimeout(done, 500); }
   skip.addEventListener("click", finish);
   st.classList.add("on");
-  els.forEach((el, i) => timers.push(setTimeout(() => { if (i) els[i-1].classList.remove("show"); el.classList.add("show"); }, 1500 + i*3200)));
-  timers.push(setTimeout(finish, 1500 + n*3200 + 1200));
+  els.forEach((el, i) => timers.push(setTimeout(() => { if (i) els[i-1].classList.remove("show"); el.classList.add("show"); }, 600 + i*2600)));
+  timers.push(setTimeout(finish, 600 + n*2600 + 400));
 }
 $("openBtn").addEventListener("click", () => {
   if (started) return; started = true;
